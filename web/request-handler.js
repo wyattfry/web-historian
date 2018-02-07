@@ -6,13 +6,7 @@ var http = require('./http-helpers');
 
 exports.handleRequest = function (req, res) {
 
-  fs.readFile(archive.paths.siteAssets + "/index.html", "utf8", (err, data) => {
-    if (err) { console.error(err); }
-    res.writeHead(200, http.headers);
-    res.write(data);
-    res.end();
-
-  });
+  http.serveAssets(res, archive.paths.siteAssets + '/index.html');
   
   //res.end(archive.paths.siteAssetslist);
 };
