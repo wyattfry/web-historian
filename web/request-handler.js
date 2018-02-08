@@ -1,11 +1,36 @@
 var path = require('path');
-var archive = require('../helpers/archive-helpers');
+var archiveh = require('../helpers/archive-helpers');
 var fs = require('fs');
-var http = require('./http-helpers');
-// require more modules/folders here!
+var httph = require('./http-helpers');
+var url = require('url');
+var querystring = require('querystring');
+var exports = module.exports = {};
+
 
 exports.handleRequest = function (req, res) {
+  
+  console.log('Serving request type ', req.method + ' for url ', req.url);
+  var parsedUrl = url.parse(req.url);
+  
 
-  http.serveAssets(res, archive.paths.siteAssets + '/index.html');
-  //res.end(archive.paths.siteAssetslist);
+  //CASE 1: Serve Index.html.
+  if (req.method === 'GET') {
+    httph.serveAssets(res, archiveh.paths.siteAssets + '/index.html');
+  } else { //CASE 2: Serve Loading.html, POST url from index
+    // parsedUrl = archiveh.removeProtocol(parsedUrl);
+    var urlPath = archiveh.paths.archivedSites + '/' + parsedUrl;
+    archiveh.addUrlToList(parsedUrl, (truth) => {
+      if (truth) {
+        //check if page is downloaded else serve loading.html
+        archiveh.isUrlArchived(parsedUrl, (truth) => {
+          if (!truth) {
+            urlPath = archiveh.paths.siteAssets + '/loading.html';
+          }
+          httph.serveAssets(res, urlPath);
+        });
+      } else {
+        httph.serveAssets(res, archiveh.paths.siteAssets + '/loading.html');
+      }
+    });
+  }
 };

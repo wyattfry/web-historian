@@ -60,12 +60,14 @@ exports.addUrlToList = function(url, callback) {
     if (!present) {
       fs.appendFile(exports.paths.list, '\n' + url, (err) => {
         if (err) {
-          throw err;
+          console.error(err);
         }
-        callback('Success');
+        console.log('Success');
+        callback(false);
       });
     } else {
-      callback(`${url} already in list.`);
+      console.log(`${url} already in list.`);
+      callback(true);
     }
   });
   
@@ -83,9 +85,9 @@ exports.isUrlArchived = function(url, callback) {
   var link = exports.removeProtocol(url);
   fs.readdir(exports.paths.archivedSites + '/' + link, (err, files) => {
     if (err) {
-      // console.log('Error occured in reading directory');
-      console.log(`${link} directory not created`);
-      //console.error(err);
+      // // console.log('Error occured in reading directory');
+      // console.log(`${link} directory not created`);
+      // throw err;
       callback(false);
     } else {
       callback(true);
@@ -97,24 +99,22 @@ exports.downloadUrls = function(links) {
 
   //TODO: Check to see if the file has been downloaded before.
   for (let i = 0; i < links.length; i++) {
-    // var link = exports.removeProtocol(links[i]);
-    // console.log(link);
     
     //check if page has been archived.
     exports.isUrlArchived(links[i], (truth) => {
       if (truth) {
-        console.log(links[i], 'Archived already');
+        // console.log(links[i], 'Archived already');
       } else {
         var link = exports.removeProtocol(links[i]);
-        console.log(link);
+        // console.log(link);
         var options = {
           urls: links[i],
           directory: exports.paths.archivedSites + '/' + link
         };
-        console.log('about to scrape, options:', options);
+        // console.log('about to scrape, options:', options);
         scraper(options, (err, result) => {
           if (err) {
-            console.error('Error downloading page: ', err);
+            throw err;
           } else {
             console.log('Sucessfully downloaded', result);
           }
@@ -123,7 +123,6 @@ exports.downloadUrls = function(links) {
     });
   }
 };
-
 
 exports.removeProtocol = function(url) {
   return url.replace(/(^\w+:|^)\/\//, '');
