@@ -6,7 +6,10 @@ var http = require('./http-helpers');
 
 exports.handleRequest = function (req, res) {
 
-  http.serveAssets(res, archive.paths.siteAssets + '/index.html');
-  
+  if (req.url === "styles.css") {
+    http.serveAssets(res, archive.paths.siteAssets + '/styles.css');
+  } else {
+    http.serveAssets(res, archive.paths.siteAssets + '/index.html');
+  }
   //res.end(archive.paths.siteAssetslist);
 };
