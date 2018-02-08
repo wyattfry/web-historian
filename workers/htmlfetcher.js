@@ -13,13 +13,13 @@ var exports = module.exports = {};
 //regularly check the lists and download the pages.
 exports.fetchHtmls = function() {
   var sites = [];
+  console.log('In fetch html');
   archiveh.readListOfUrls((data) => {
     _.each(data.split('\n'), (url) => {
-      sites.push(url);
+      console.log('Processing each url', url);
+      archiveh.downloadUrls([url]);
     });
   });
-
-  archiveh.downloadUrls(sites);
 };
 
 //schedule a task here in node-cron
