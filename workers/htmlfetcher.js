@@ -6,6 +6,7 @@ var fs = require('fs');
 var httph = require('./http-helpers');
 var _ = require('underscore');
 var url = require('url');
+var cron = require('node-cron');
 var exports = module.exports = {};
 
 
@@ -18,5 +19,7 @@ exports.fetchHtmls = function() {
     });
   });
 
-  return archiveh.downloadUrls(sites);
+  archiveh.downloadUrls(sites);
 };
+
+//schedule a task here in node-cron

@@ -38,24 +38,18 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
-  fs.readFile(exports.paths.list, 'utf8', (err, data) => {
-    var present = false;
-    if (err) {
-      console.error('Error', err);
-    } else {
-      //console.log('Data: ', data);
-      _.each(data.split('\n'), function(line) {
-        if (url === line) {
-          present = true;
-        }
-      });
-    }
-    callback(present);
+  var present = false;
+  exports.readListOfUrls((data) => {
+    _.each(data.split('\n'), function(line) {
+      if (url === line) {
+        present = true;
+      }
+    });
   });
+  callback(present);
 };
 
 exports.addUrlToList = function(url, callback) {
-  
   exports.isUrlInList(url, function(present) {
     if (!present) {
       fs.appendFile(exports.paths.list, '\n' + url, (err) => {
@@ -127,7 +121,3 @@ exports.downloadUrls = function(links) {
 exports.removeProtocol = function(url) {
   return url.replace(/(^\w+:|^)\/\//, '');
 };
-
-var links = ['https://whitehouse.gov', 'https://hackreactor.com', 'https://twitter.com'];
-//Testing the above functions.
-exports.downloadUrls(links);
