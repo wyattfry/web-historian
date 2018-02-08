@@ -83,7 +83,9 @@ exports.isUrlArchived = function(url, callback) {
   var link = exports.removeProtocol(url);
   fs.readdir(exports.paths.archivedSites + '/' + link, (err, files) => {
     if (err) {
-      console.error(err);
+      // console.log('Error occured in reading directory');
+      console.log(`${link} directory not created`);
+      //console.error(err);
       callback(false);
     } else {
       callback(true);
@@ -95,22 +97,24 @@ exports.downloadUrls = function(links) {
 
   //TODO: Check to see if the file has been downloaded before.
   for (let i = 0; i < links.length; i++) {
-    var link = exports.removeProtocol(links[i]);
-    console.log(link);
+    // var link = exports.removeProtocol(links[i]);
+    // console.log(link);
     
     //check if page has been archived.
     exports.isUrlArchived(links[i], (truth) => {
       if (truth) {
         console.log(links[i], 'Archived already');
       } else {
+        var link = exports.removeProtocol(links[i]);
+        console.log(link);
         var options = {
           urls: links[i],
           directory: exports.paths.archivedSites + '/' + link
         };
-
+        console.log('about to scrape, options:', options);
         scraper(options, (err, result) => {
           if (err) {
-            console.log(err);
+            console.error('Error downloading page: ', err);
           } else {
             console.log('Sucessfully downloaded', result);
           }
