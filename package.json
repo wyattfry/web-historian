@@ -21,7 +21,8 @@
     "cron": "^1.1.0",
     "nodemon": "^1.14.12",
     "request": "^2.70.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "website-scraper": "^3.3.2"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",

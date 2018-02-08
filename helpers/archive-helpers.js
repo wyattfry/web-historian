@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var scraper = require('website-scraper');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -42,28 +43,45 @@ exports.isUrlInList = function(url, callback) {
     if (err) {
       console.error('Error', err);
     } else {
-      console.log('Data: ', data);
+      //console.log('Data: ', data);
       _.each(data.split('\n'), function(line) {
         if (url === line) {
           present = true;
         }
       });
     }
-    return callback(present);
+    callback(present);
   });
 };
 
 exports.addUrlToList = function(url, callback) {
-  if (!exports.isUrlInList(url, callback)) {
-    fs.appendFile(exports.paths.list, url, (err) => {
-      if (err) { throw err; }
-      callback('Success');
-    });
-  }
+  
+  exports.isUrlInList(url, function(present) {
+    if (!present) {
+      fs.appendFile(exports.paths.list, '\n' + url, (err) => {
+        if (err) {
+          throw err;
+        }
+        callback('Success');
+      });
+    } else {
+      callback(`${url} already in list.`);
+    }
+  });
+  
+  // var present = exports.isUrlInList(url, callback);
+  // if (!present) {
+  //   fs.appendFile(exports.paths.list, '\n' + url, (err) => {
+  //     if (err) { throw err; }
+  //     callback('Success');
+  // } else {
+  //   callback('URL already in List');
+  // }
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.readdir(exports.paths.archivedSites + '/' + url, (err, files) => {
+  var link = exports.removeProtocol(url);
+  fs.readdir(exports.paths.archivedSites + '/' + link, (err, files) => {
     if (err) {
       console.error(err);
       callback(false);
@@ -73,13 +91,40 @@ exports.isUrlArchived = function(url, callback) {
   });
 };
 
-exports.downloadUrls = function(urls) {
-  
+exports.downloadUrls = function(links) {
+
+  //TODO: Check to see if the file has been downloaded before.
+  for (let i = 0; i < links.length; i++) {
+    var link = exports.removeProtocol(links[i]);
+    console.log(link);
+    
+    //check if page has been archived.
+    exports.isUrlArchived(links[i], (truth) => {
+      if (truth) {
+        console.log(links[i], 'Archived already');
+      } else {
+        var options = {
+          urls: links[i],
+          directory: exports.paths.archivedSites + '/' + link
+        };
+
+        scraper(options, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Sucessfully downloaded', result);
+          }
+        });
+      }
+    });
+  }
 };
 
 
+exports.removeProtocol = function(url) {
+  return url.replace(/(^\w+:|^)\/\//, '');
+};
+
+var links = ['https://whitehouse.gov', 'https://hackreactor.com', 'https://twitter.com'];
 //Testing the above functions.
-exports.isUrlInList('', console.log);
-
-
-
+exports.downloadUrls(links);
