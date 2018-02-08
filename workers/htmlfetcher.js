@@ -3,7 +3,7 @@
 var path = require('path');
 var archiveh = require('../helpers/archive-helpers');
 var fs = require('fs');
-var httph = require('./http-helpers');
+var httph = require('../web/http-helpers');
 var _ = require('underscore');
 var url = require('url');
 var cron = require('node-cron');
@@ -23,3 +23,5 @@ exports.fetchHtmls = function() {
 };
 
 //schedule a task here in node-cron
+//exceute every 1 min
+cron.schedule('*/1 * * * *', exports.fetchHtmls);
