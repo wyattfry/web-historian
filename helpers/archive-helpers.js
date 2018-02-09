@@ -38,15 +38,16 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
-  var present = false;
+  
   exports.readListOfUrls((data) => {
+    var present = false;
     _.each(data.split('\n'), function(line) {
       if (url === line) {
         present = true;
       }
     });
+    callback(present);
   });
-  callback(present);
 };
 
 exports.addUrlToList = function(url, callback) {
@@ -76,8 +77,8 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
-  var link = exports.removeProtocol(url);
-  fs.readdir(exports.paths.archivedSites + '/' + link, (err, files) => {
+  //var link = exports.removeProtocol(url);
+  fs.readdir(exports.paths.archivedSites + '/' + url, (err, files) => {
     if (err) {
       // // console.log('Error occured in reading directory');
       // console.log(`${link} directory not created`);
@@ -99,11 +100,9 @@ exports.downloadUrls = function(links) {
       if (truth) {
         // console.log(links[i], 'Archived already');
       } else {
-        var link = exports.removeProtocol(links[i]);
-        // console.log(link);
         var options = {
           urls: links[i],
-          directory: exports.paths.archivedSites + '/' + link
+          directory: exports.paths.archivedSites + '/' + links[i]
         };
         // console.log('about to scrape, options:', options);
         scraper(options, (err, result) => {
@@ -119,5 +118,6 @@ exports.downloadUrls = function(links) {
 };
 
 exports.removeProtocol = function(url) {
-  return url.replace(/(^\w+:|^)\/\//, '');
+  // return url.replace(/(^\w+:|^)\/\//, '');
+  return url.replace(/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?/, '');
 };

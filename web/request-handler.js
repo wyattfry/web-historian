@@ -14,16 +14,18 @@ exports.handleRequest = function (req, res) {
 
   //CASE 1: Serve Index.html.
   if (req.method === 'GET') {
+    
     httph.serveAssets(res, archiveh.paths.siteAssets + '/index.html');
   } else { //CASE 2: Serve Loading.html, POST url from index
-    // parsedUrl = archiveh.removeProtocol(parsedUrl);
-    var body = '';
+    
+    var userInput = '';
     
     req.on('data', (chunk) => {
-      body += chunk;
+      userInput += chunk;
     });
+
     req.on('end', () => {
-      var post = querystring.parse(body);
+      var post = querystring.parse(userInput);
       var parsedUrl = post.url;
       parsedUrl = archiveh.removeProtocol(parsedUrl);
       var urlPath = archiveh.paths.archivedSites + '/' + parsedUrl;

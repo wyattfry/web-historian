@@ -13,10 +13,10 @@ var exports = module.exports = {};
 //regularly check the lists and download the pages.
 exports.fetchHtmls = function() {
   var sites = [];
-  console.log('In fetch html');
+  //console.log('In fetch html');
   archiveh.readListOfUrls((data) => {
     _.each(data.split('\n'), (url) => {
-      console.log('Processing each url', url);
+      //console.log('Processing each url', url);
       archiveh.downloadUrls([url]);
     });
   });
